@@ -1,0 +1,36 @@
+# /tmp/otel-collector-config.yaml
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+exporters:
+  # NOTE: Prior to v0.86.0 use `logging` instead of `debug`.
+  debug:
+    verbosity: detailed
+  # The Datadog exporter is necessary for exporting telemetry signals to Datadog.
+  datadog:
+    api:
+      ## @ param key - string - required
+      ## The Datadog API key to associate your Agent's data with your organization.
+      ## Create a new API key here: https://app.datadoghq.com/account/settings
+      #
+      key: <API KEY HERE>
+processors:
+  batch:
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [debug, datadog]
+      processors: [batch]
+    metrics:
+      receivers: [otlp]
+      exporters: [debug]
+      processors: [batch]
+    logs:
+      receivers: [otlp]
+      exporters: [debug]
+      processors: [batch]
